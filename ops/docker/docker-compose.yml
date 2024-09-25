@@ -1,0 +1,15 @@
+services:
+
+  api:
+      build:
+        context: ../..
+        dockerfile: ops/docker/Dockerfile.local
+      ports:
+        - "5000:5000"
+      volumes:
+        - ../../:/app
+      environment:
+        FLASK_APP: src/api/run.py
+        FLASK_ENV: development
+        FLASK_DEBUG: 1
+        FLASK_RUN_HOST:
