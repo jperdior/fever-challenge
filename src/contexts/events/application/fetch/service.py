@@ -1,6 +1,5 @@
 """Service to fetch events"""
 
-import asyncio
 from src.contexts.events.domain.provider import EventProvider
 
 
