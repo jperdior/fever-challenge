@@ -37,6 +37,9 @@ restart: stop start
 lint:
 	@${DOCKER_COMPOSE} exec ${API} black src/
 
+mypy:
+	@${DOCKER_COMPOSE} exec ${API} mypy src/
+
 restart-fetcher: stop-fetcher start-fetcher
 
 start-fetcher: build-fetcher run-fetcher
