@@ -1,6 +1,8 @@
 PWD = $(shell pwd)
 PROJECT_NAME = fever-challenge
+API=api
 DOCKER_COMPOSE=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.yml
+DOCKER_COMPOSE_FETCHER=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.fetcher.yml
 GREEN=\033[0;32m
 RESET=\033[0m
 
@@ -33,4 +35,17 @@ stop:
 restart: stop start
 
 lint:
-	@${DOCKER_COMPOSE} exec black src/ tests/
+	@${DOCKER_COMPOSE} exec ${API} black src/
+
+restart-fetcher: stop-fetcher start-fetcher
+
+start-fetcher: build-fetcher run-fetcher
+
+build-fetcher:
+	@${DOCKER_COMPOSE_FETCHER} build
+
+run-fetcher:
+	@${DOCKER_COMPOSE_FETCHER} up -d
+
+stop-fetcher:
+	@${DOCKER_COMPOSE_FETCHER} down

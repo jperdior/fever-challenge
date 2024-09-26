@@ -1,6 +1,8 @@
 """Search Service"""
+
 from typing import List
 from src.contexts.events.domain.event import Event
+
 
 class SearchService:
     """Search Service"""

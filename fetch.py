@@ -1,10 +1,8 @@
 """Runs the Flask application."""
 from flask import Flask
-from src.api.routes.events import events_bp
 from src.api.command.events import events_commands_bp
 
 app = Flask(__name__)
-app.register_blueprint(events_bp)
 app.register_blueprint(events_commands_bp)
 
 

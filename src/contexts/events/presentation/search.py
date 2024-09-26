@@ -1,4 +1,5 @@
 """Search controller module."""
+
 from flask import Request, Response
 from src.shared.presentation.controller import ControllerInterface
 from src.contexts.events.application.search.service import SearchService
@@ -9,6 +10,7 @@ from src.shared.presentation.dto import ResponseDto
 
 class SearchController(ControllerInterface):
     """Search controller"""
+
     def __init__(self, search_service: SearchService):
         self.search_service = search_service
 
