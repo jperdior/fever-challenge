@@ -31,3 +31,6 @@ stop:
 	@${DOCKER_COMPOSE} down
 
 restart: stop start
+
+lint:
+	@${DOCKER_COMPOSE} exec black src/ tests/

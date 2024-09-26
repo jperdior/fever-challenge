@@ -4,10 +4,13 @@ version = "0.1.0"
 description = ""
 authors = ["Julio Perdiguer <julio.perdiguer@zolar.de>"]
 readme = "README.md"
+packages = [{ include = "fever-challenge", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
 flask = "^3.0.3"
+pylint = "^3.3.1"
+black = "^24.8.0"
 
 
 [build-system]
