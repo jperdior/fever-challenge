@@ -2,7 +2,7 @@ PWD = $(shell pwd)
 PROJECT_NAME = fever-challenge
 API=api
 DOCKER_COMPOSE=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.yml
-DOCKER_COMPOSE_FETCHER=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.fetcher.yml
+DOCKER_COMPOSE_ALL=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.yml -f ${PWD}/ops/docker/docker-compose.fetcher.yml
 GREEN=\033[0;32m
 RESET=\033[0m
 
@@ -13,42 +13,67 @@ RESET=\033[0m
 .PHONY: help
 help:
 ifeq ($(UNAME), Linux)
-	@grep -P '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@grep -P '^[a-zA-Z_-]+:.*?### .*$$' $(MAKEFILE_LIST) | sort | \
+		awk 'BEGIN {FS = ":.*?### "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 else
 	@# this is not tested, but prepared in advance for you, Mac drivers
-	@awk -F ':.*###' '$$0 ~ FS {printf "%15s%s\n", $$1 ":", $$2}' \
+	@awk -F ':.*####' '$$0 ~ FS {printf "%15s%s\n", $$1 ":", $$2}' \
 		$(MAKEFILE_LIST) | grep -v '@awk' | sort
 endif
 
-start: build run
+start: build run ### Start the project
 
-build:
+build: ### Build the project
 	@${DOCKER_COMPOSE} build
 
-run:
+run: ### Run the project
 	@${DOCKER_COMPOSE} up -d
 
-stop:
+stop: ### Stop the project
 	@${DOCKER_COMPOSE} down
 
 restart: stop start
 
-lint:
+lint: ### Lint the project
 	@${DOCKER_COMPOSE} exec ${API} black src/
 
-mypy:
+mypy: ### Type check the project
 	@${DOCKER_COMPOSE} exec ${API} mypy src/
 
-restart-fetcher: stop-fetcher start-fetcher
+restart-all: stop-all start-all ### Restart the all
 
-start-fetcher: build-fetcher run-fetcher
+start-all: build-all run-all ### Start the all
 
-build-fetcher:
-	@${DOCKER_COMPOSE_FETCHER} build
+build-all: ### Build the all
+	@${DOCKER_COMPOSE_ALL} build
 
-run-fetcher:
-	@${DOCKER_COMPOSE_FETCHER} up -d
+run-all: ### Run the all
+	@${DOCKER_COMPOSE_ALL} up -d
 
-stop-fetcher:
-	@${DOCKER_COMPOSE_FETCHER} down
+stop-all: ### Stop the all
+	@${DOCKER_COMPOSE_ALL} down
+
+logs: ### Show logs
+	@${DOCKER_COMPOSE} logs -f
+
+###@ Migration
+
+init-migrations: ### Initialize the migrations
+	@${DOCKER_COMPOSE} exec ${API} flask db init
+
+migrate: ### Create a new migration
+	@${DOCKER_COMPOSE} exec ${API} flask db migrate
+
+upgrade: ### Upgrade the database
+	@${DOCKER_COMPOSE} exec ${API} flask db upgrade
+
+downgrade: ### Downgrade the database
+	@${DOCKER_COMPOSE} exec ${API} flask db downgrade
+
+###@ Tests
+
+
+###@ Utils
+
+docs:
+	open http://localhost:5000/apidocs

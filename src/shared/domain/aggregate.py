@@ -6,7 +6,7 @@ from src.shared.domain.bus.event import DomainEvent
 class AggregateRoot:
     """Aggregate Root class"""
 
-    def __init__(self, aggregate_id: int):
+    def __init__(self, aggregate_id: str):
         self.aggregate_id = aggregate_id
         self.events: list[DomainEvent] = []
 

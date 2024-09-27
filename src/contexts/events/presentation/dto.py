@@ -1,18 +1,25 @@
 """DTOs for events"""
 
-from typing import List
+from typing import List, Union
 from dataclasses import dataclass
 from src.contexts.events.domain.event import Event
-from src.shared.presentation.dto import ResponseDto
+from src.shared.presentation.dto import Error, ResponseDto
 
 
 @dataclass
 class SearchResponseDto(ResponseDto):
     """Search Response DTO"""
 
-    data: List[Event]
-    error: str | None = None
+    data: Union[List[Event], None]
+    error: Union[Error, None]
 
     def to_dict(self) -> dict:
         """Converts the object to a dictionary."""
-        return {"data": [event.to_dict() for event in self.data], "error": self.error}
+        return {
+            "data": (
+                [event.to_dict() for event in self.data]
+                if self.data is not None
+                else None
+            ),
+            "error": self.error.to_dict() if self.error is not None else None,
+        }

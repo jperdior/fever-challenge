@@ -8,6 +8,10 @@ class EventRepository(ABC):
     """Abstract class for event repositories."""
 
     @abstractmethod
+    def find_by_base_id(self, base_id: int) -> Event|None:
+        """Find events by base id."""
+
+    @abstractmethod
     def find_by_range(self, start_date: datetime, end_date: datetime) -> list[Event]:
         """Find events by date range."""
 

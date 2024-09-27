@@ -18,12 +18,14 @@ class ChallengeProvider(EventProvider):
     """Challenge provider class."""
 
     PROVIDER_URL = "https://provider.code-challenge.feverup.com/api/events"
+    SELL_MODE_TRUE = "online"
 
-    def fetch_events(self):
+    def fetch_events(self) -> list[Event]:
         response = requests.get(self.PROVIDER_URL)
         if response.status_code == 200:
             events_data = response.text
-            self.parse_events(events_data)
+            return self.parse_events(events_data)
+        return []
 
     def parse_events(self, data: str) -> list[Event]:
         events = []
@@ -32,7 +34,9 @@ class ChallengeProvider(EventProvider):
         for base_event in root.findall("output/base_event"):
             base_event_id = base_event.get("base_event_id", "")
             title = base_event.get("title", "")
-            print(f"Processing event: {title}")
+            sell_mode_string = base_event.get("sell_mode", "")
+            sell_mode = sell_mode_string == self.SELL_MODE_TRUE
+            logging.info("Processing event: %s", title)
             for event in base_event.findall("event"):
                 event_start_date = event.get("event_start_date", "")
                 event_end_date = event.get("event_end_date", "")
@@ -52,7 +56,7 @@ class ChallengeProvider(EventProvider):
 
                 try:
                     event_instance = Event(
-                        id=EventIdVo(base_event_id),
+                        base_id=EventIdVo(base_event_id),
                         title=EventTitleVo(title),
                         date_range=DateRangeVo(
                             start_datetime=event_start_date,
@@ -60,6 +64,7 @@ class ChallengeProvider(EventProvider):
                         ),
                         min_price=min_price,
                         max_price=max_price,
+                        sell_mode=sell_mode,
                     )
                 except (ValueError, TypeError) as e:
                     logging.error("Error parsing event instance: %s", e)
@@ -67,8 +72,3 @@ class ChallengeProvider(EventProvider):
 
                 events.append(event_instance)
         return events
-
-    def store_events(self, events: list[Event]) -> None:
-        """Store the parsed events in the database."""
-        for event in events:
-            logging.info("Storing event: %s", event.to_dict())

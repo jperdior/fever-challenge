@@ -21,4 +21,15 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["poetry", "run", "flask", "run", "--host=0.0.0.0"]
+ARG FLASK_APP
+ARG FLASK_ENV
+
+ENV FLASK_APP=${FLASK_APP}
+ENV FLASK_ENV=${FLASK_ENV}
+
+
+COPY ops/scripts/start.sh /app/ops/scripts/start.sh
+RUN chmod +x /app/ops/scripts/start.sh
+
+# Command to run the start.sh script
+CMD ["/app/ops/scripts/start.sh"]

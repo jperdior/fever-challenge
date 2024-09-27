@@ -4,6 +4,9 @@ services:
       build:
         context: ../..
         dockerfile: ops/docker/Dockerfile.local
+        args:
+          FLASK_APP: run.py
+          FLASK_ENV: development
       ports:
         - "5000:5000"
       volumes:
@@ -20,6 +23,9 @@ services:
         POSTGRES_PORT: 5432
         REDIS_HOST: redis
         REDIS_PORT: 6379
+      depends_on:
+        db:
+          condition: service_healthy
 
   db:
     image: postgres:15
@@ -31,6 +37,12 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fever_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   redis:
     image: redis:alpine
