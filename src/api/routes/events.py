@@ -11,23 +11,59 @@ events_bp = Blueprint("events-router", __name__)
 def search():
     """Search events
     ---
-    tags:
-      - Events
     parameters:
       - name: starts_at
         in: query
         type: string
         required: true
-        description: Return only events that starts after this date
-        format: date
+        description: Return only events that start after this date
         default: 2017-07-21T17:32:28Z
       - name: ends_at
         in: query
         type: string
         required: true
-        description: Return only events that finishes before this date
-        format: date-time
+        description: Return only events that end before this date
         default: 2021-07-21T17:32:28Z
+    definitions:
+      EventList:
+        type: array
+        name: events
+        items:
+          $ref: '#/definitions/EventSummary'
+      EventSummary:
+        type: object
+        properties:
+          id:
+            type: string($uuid)
+            description: Identifier for the plan (UUID)
+            example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+          title:
+            type: string
+            description: Title of the plan
+          start_date:
+            type: string($date)
+            description: Date when the event starts in local time
+            example: 2021-07-21
+          start_time:
+            type: string($time)
+            nullable: true
+            example: 20:00:00
+            description: Time when the event starts in local time
+          end_date:
+            type: string($date)
+            description: Date when the event ends in local time
+            example: 2021-07-21
+          end_time:
+            type: string($time)
+            nullable: true
+            example: 22:00:00
+            description: Time when the event ends in local time
+          min_price:
+            type: number
+            nullable: true
+          max_price:
+            type: number
+            nullable: true
     responses:
       200:
         description: List of plans
@@ -35,66 +71,22 @@ def search():
           type: object
           properties:
             data:
-              type: object
-              properties:
-                events:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        default: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-                      title:
-                        type: string
-                        default: "Event title"
-                      start_date:
-                        type: string
-                      start_time:
-                        type: string
-                      end_date:
-                        type: string
-                      end_time:
-                        type: string
-                      min_price:
-                        type: number
-                      max_price:
-                        type: number
+              type: array
+              items:
+                $ref: '#/definitions/EventSummary'
             error:
               type: object
               nullable: true
               properties:
                 code:
-                  type: string
+                  type: integer
                 message:
                   type: string
+
       400:
         description: Bad request
-        schema:
-          type: object
-          properties:
-            error:
-              type: object
-              properties:
-                code:
-                  type: string
-                message:
-                  type: string
-            data:
-                type: null
       500:
-        description: Bad request
-        schema:
-          type: object
-          properties:
-            error:
-              type: object
-              properties:
-                code:
-                  type: string
-                message:
-                  type: string
-                   
+        description: Internal server error
     """
     events = search_controller.execute(request)
     if events.error:

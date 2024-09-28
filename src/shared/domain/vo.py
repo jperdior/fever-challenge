@@ -1,7 +1,6 @@
 """Value objects for the domain."""
 
 from datetime import datetime
-import logging
 
 class DateRangeVo:
     """Value Object for date ranges."""
@@ -17,6 +16,7 @@ class DateRangeVo:
         formats = [
             "%Y-%m-%dT%H:%M:%S",
             "%Y-%m-%dT%H:%M:%SZ",
+            "%a, %d %b %Y %H:%M:%S %Z",
         ]
         for fmt in formats:
             try:
