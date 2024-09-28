@@ -34,8 +34,5 @@ class SearchController(ControllerInterface):
         except ValueError as e:
             return SearchResponseDto(data=None, error=BadRequestError(message=str(e)))
 
-        try:
-            events: list[Event] = self.search_service.execute(date_range=date_range)
-        except Exception:
-            return SearchResponseDto(data=None, error=InternalServerError())
+        events: list[Event] = self.search_service.execute(date_range=date_range)
         return SearchResponseDto(data=events, error=None)

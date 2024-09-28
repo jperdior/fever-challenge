@@ -3,7 +3,7 @@ This module represents the Event Aggregate Root.
 """
 
 import uuid
-from src.contexts.events.domain.value_objects import EventIdVo, EventTitleVo
+from src.contexts.events.domain.value_objects import EventBaseIdVo, EventTitleVo
 from src.shared.domain.aggregate import AggregateRoot
 from src.shared.domain.vo import DateRangeVo
 
@@ -15,7 +15,7 @@ class Event(AggregateRoot):
 
     def __init__(
         self,
-        base_id: EventIdVo,
+        base_id: EventBaseIdVo,
         title: EventTitleVo,
         date_range: DateRangeVo,
         min_price: float,
@@ -23,11 +23,7 @@ class Event(AggregateRoot):
         sell_mode: bool,
         aggregate_id: str|None = None,
     ):
-        if aggregate_id:
-            super().__init__(aggregate_id=aggregate_id)
-        else:
-            uid = uuid.uuid4()
-            super().__init__(aggregate_id=str(uid))
+        self.aggregate_id = aggregate_id or str(uuid.uuid4())
         self.base_id = base_id
         self.title = title
         self.date_range = date_range
@@ -47,7 +43,7 @@ class Event(AggregateRoot):
         """Converts the object to a dictionary."""
         return {
             "id": self.aggregate_id,
-            "title": self.title,
+            "title": self.title.value,
             "start_date": self.date_range.start_date,
             "start_time": self.date_range.start_time,
             "end_date": self.date_range.end_date,

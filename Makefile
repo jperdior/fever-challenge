@@ -77,3 +77,6 @@ downgrade: ### Downgrade the database
 
 docs:
 	open http://localhost:5000/apidocs
+
+fetch-events:
+	@${DOCKER_COMPOSE} exec ${API} flask events fetch

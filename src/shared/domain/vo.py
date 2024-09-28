@@ -1,7 +1,7 @@
 """Value objects for the domain."""
 
 from datetime import datetime
-
+import logging
 
 class DateRangeVo:
     """Value Object for date ranges."""
@@ -14,10 +14,17 @@ class DateRangeVo:
     @staticmethod
     def parse_datetime(datetime_str: str) -> datetime:
         """Parse a string to a datetime object."""
-        try:
-            return datetime.fromisoformat(datetime_str)
-        except ValueError as e:
-            raise ValueError(f"Invalid datetime format: {datetime_str}") from e
+        formats = [
+            "%Y-%m-%dT%H:%M:%S",
+            "%Y-%m-%dT%H:%M:%SZ",
+        ]
+        for fmt in formats:
+            try:
+                return datetime.strptime(datetime_str, fmt)
+            except ValueError:
+                continue
+        raise ValueError(f"Invalid datetime format: {datetime_str}")
+
 
     def guard_values(self) -> None:
         """Guard method to check the values."""

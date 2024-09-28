@@ -10,7 +10,6 @@ class EventModel(DB.Model):
 
     __tablename__ = "events"
 
-    id = Column(String, primary_key=True)
     base_id = Column(Integer, nullable=False)
     title = Column(String, nullable=False)
     start_date = Column(DateTime, nullable=False)
@@ -24,25 +23,15 @@ class EventModel(DB.Model):
     )
     deleted_at = Column(DateTime, default=None, nullable=True)
 
-    def __init__(
-        self,
-        aggregate_id: str,
-        base_id: int,
-        title: str,
-        start_date: datetime,
-        end_date: datetime,
-        min_price: float,
-        max_price: float,
-        sell_mode: bool,
-    ):
-        self.id = aggregate_id
-        self.base_id = base_id
-        self.title = title
-        self.start_date = start_date
-        self.end_date = end_date
-        self.min_price = min_price
-        self.max_price = max_price
-        self.sell_mode = sell_mode
-
     def __repr__(self):
-        return f"<EventModel(id={self.id}, title={self.title}, start_date={self.start_date}, end_date={self.end_date}, min_price={self.min_price}, max_price={self.max_price}, sell_mode={self.sell_mode})>"
+        return (f"<EventModel(id={self.id}, title={self.title}, start_date={self.start_date}, "
+                f"end_date={self.end_date}, min_price={self.min_price}, "
+                f"max_price={self.max_price}, sell_mode={self.sell_mode})>")
+    
+    def start_datetime_to_str(self) -> str:
+        """Converts start datetime to string"""
+        return self.start_date.strftime("%Y-%m-%dT%H:%M:%S")
+    
+    def end_datetime_to_str(self) -> str:
+        """Converts end datetime to string"""
+        return self.end_date.strftime("%Y-%m-%dT%H:%M:%S")

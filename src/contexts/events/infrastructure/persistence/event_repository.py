@@ -1,9 +1,11 @@
 """Event Repository Implementation."""
 
+import uuid
+import logging
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from src.contexts.events.domain.event import Event
-from src.contexts.events.domain.value_objects import EventIdVo, EventTitleVo
+from src.contexts.events.domain.value_objects import EventBaseIdVo, EventTitleVo
 from src.contexts.events.infrastructure.persistence.event_model import EventModel
 from src.contexts.events.domain.event_repository import EventRepository
 from src.shared.domain.vo import DateRangeVo
@@ -30,7 +32,7 @@ class EventRepositoryImpl(EventRepository):
             .filter(
                 EventModel.start_date >= start_date,
                 EventModel.end_date <= end_date,
-                EventModel.sell_mode == True,
+                EventModel.sell_mode.is_(True),
             )
             .all()
         )
@@ -38,17 +40,19 @@ class EventRepositoryImpl(EventRepository):
 
     def save(self, event: Event) -> None:
         """Save an event."""
+        logging.info("Saving event %s with id %s", event.title.value, event.aggregate_id)
         event_model = self._map_to_model(event=event)
         self.db.session.merge(event_model)
         self.db.session.commit()
 
     def _map_to_domain(self, event_model: EventModel) -> Event:
         """Map infra to domain"""
-        id = event_model.id
-        event_base_id = EventIdVo(event_model.base_id)
+        aggregate_id = str(event_model.id)
+        event_base_id = EventBaseIdVo(event_model.base_id)
         title = EventTitleVo(event_model.title)
         date_range = DateRangeVo(
-            start_datetime=str(event_model.start_date), end_datetime=str(event_model.end_date)
+            start_datetime=event_model.start_datetime_to_str(),
+            end_datetime=event_model.end_datetime_to_str()
         )
         return Event(
             base_id=event_base_id,
@@ -57,13 +61,13 @@ class EventRepositoryImpl(EventRepository):
             min_price=event_model.min_price,
             max_price=event_model.max_price,
             sell_mode=event_model.sell_mode,
-            aggregate_id=id,
+            aggregate_id=aggregate_id,
         )
-
+    
     def _map_to_model(self, event: Event) -> EventModel:
         """Map domain to infra"""
         return EventModel(
-            aggregate_id=event.aggregate_id,
+            id=uuid.UUID(event.aggregate_id),
             base_id=event.base_id.value,
             title=event.title.value,
             start_date=event.date_range.start_datetime,

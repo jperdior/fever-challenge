@@ -15,6 +15,7 @@ class SearchService:
 
     def execute(self, date_range: DateRangeVo) -> List[Event]:
         """Execute use case"""
+        print("Searching events...")
         events = self.repository.find_by_range(
             start_date=date_range.start_datetime, end_date=date_range.end_datetime
         )

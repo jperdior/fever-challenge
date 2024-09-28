@@ -1,5 +1,7 @@
-class EventIdVo:
-    """Value object for event id."""
+"""Domain value objects for events context."""
+
+class EventBaseIdVo:
+    """Value object for event base id."""
 
     def __init__(self, value: str | int):
         self.value: int = int(value)

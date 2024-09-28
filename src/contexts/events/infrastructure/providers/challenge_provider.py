@@ -5,7 +5,7 @@ import logging
 import requests
 from src.contexts.events.domain.provider import EventProvider
 from src.contexts.events.domain.event import Event
-from src.contexts.events.domain.value_objects import EventTitleVo, EventIdVo
+from src.contexts.events.domain.value_objects import EventTitleVo, EventBaseIdVo
 from src.shared.domain.vo import DateRangeVo
 
 
@@ -36,7 +36,7 @@ class ChallengeProvider(EventProvider):
             title = base_event.get("title", "")
             sell_mode_string = base_event.get("sell_mode", "")
             sell_mode = sell_mode_string == self.SELL_MODE_TRUE
-            logging.info("Processing event: %s", title)
+            logging.info("Processing event with title: %s and base id: %s", title, base_event_id)
             for event in base_event.findall("event"):
                 event_start_date = event.get("event_start_date", "")
                 event_end_date = event.get("event_end_date", "")
@@ -44,19 +44,18 @@ class ChallengeProvider(EventProvider):
                 min_price = float("inf")
                 max_price = float("-inf")
 
-                # Process zones to find min and max price
                 for zone in event.findall("zone"):
                     price_str = zone.get("price")
                     if price_str is not None:
                         price = float(price_str)
                     else:
-                        price = 0.0  # or handle the None case appropriately
+                        price = 0.0 
                     min_price = min(min_price, price)
                     max_price = max(max_price, price)
 
                 try:
                     event_instance = Event(
-                        base_id=EventIdVo(base_event_id),
+                        base_id=EventBaseIdVo(base_event_id),
                         title=EventTitleVo(title),
                         date_range=DateRangeVo(
                             start_datetime=event_start_date,
@@ -67,7 +66,7 @@ class ChallengeProvider(EventProvider):
                         sell_mode=sell_mode,
                     )
                 except (ValueError, TypeError) as e:
-                    logging.error("Error parsing event instance: %s", e)
+                    logging.warning("Event instance could not be parsed due to %s.",e)
                     continue
 
                 events.append(event_instance)
