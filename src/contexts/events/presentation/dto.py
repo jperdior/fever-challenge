@@ -17,9 +17,12 @@ class SearchResponseDto(ResponseDto):
         """Converts the object to a dictionary."""
         return {
             "data": (
-                [event.to_dict() for event in self.data]
-                if self.data is not None
-                else None
+            [
+                {k: v for k, v in event.to_dict().items() if k != "sell_mode"}
+                for event in self.data
+            ]
+            if self.data is not None
+            else None
             ),
             "error": self.error.to_dict() if self.error is not None else None,
         }

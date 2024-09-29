@@ -7,7 +7,7 @@ class AggregateRoot:
     """Aggregate Root class"""
 
     def __init__(self, aggregate_id: str):
-        self.aggregate_id = aggregate_id
+        self.id = aggregate_id
         self.events: list[DomainEvent] = []
 
     def record(self, event: DomainEvent):

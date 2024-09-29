@@ -21,9 +21,9 @@ class Event(AggregateRoot):
         min_price: float,
         max_price: float,
         sell_mode: bool,
-        aggregate_id: str|None = None,
+        aggregate_id: str|None
     ):
-        self.aggregate_id = aggregate_id or str(uuid.uuid4())
+        super().__init__(aggregate_id or str(uuid.uuid4()))
         self.base_id = base_id
         self.title = title
         self.date_range = date_range
@@ -42,7 +42,8 @@ class Event(AggregateRoot):
     def to_dict(self) -> dict:
         """Converts the object to a dictionary."""
         return {
-            "id": self.aggregate_id,
+            "id": self.id,
+            "base_id": self.base_id.value,
             "title": self.title.value,
             "start_date": self.date_range.start_date,
             "start_time": self.date_range.start_time,
@@ -50,4 +51,21 @@ class Event(AggregateRoot):
             "end_time": self.date_range.end_time,
             "min_price": self.min_price,
             "max_price": self.max_price,
+            "sell_mode": self.sell_mode
         }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Event':
+        """Creates an Event instance from a dictionary."""
+        return cls(
+            aggregate_id=data["id"],
+            base_id=EventBaseIdVo(data["base_id"]),
+            title=EventTitleVo(data["title"]),
+            date_range=DateRangeVo(
+                data["start_date"]+data["start_time"],
+                  data["end_date"]+data["end_time"]
+                  ),
+            min_price=data["min_price"],
+            max_price=data["max_price"],
+            sell_mode=data["sell_mode"]
+        )
