@@ -20,7 +20,7 @@
 - I've decided to use Flask for this challenge as it is a fast and easy to use framework to build a rest API.
 - As a testing suite I decided to use pytest as I had some experience with it. I included only unit tests in this challenge as it was time consuming to prepare the environment also for functional tests.
 - The chosen architecture is DDD to maintain clear separation of the framework with the business logic. I also apply the repository pattern to maintain separation of concerns and, in case in the future either the db, the cache, or the provider changes, the use cases don't need to be modified.
-- To persist the events I've chosen PostgreSQL in prevision that this service could be expanded with relations, but as it is, a MongoDB or DynamoDB would be also a valid approach.
+- To persist the events I've chosen PostgreSQL in anticipation that this service could be expanded with relations, but as it is, a MongoDB or DynamoDB would be also a valid approach.
 - I created a Flask command that retrieves the events from the provider and stores them in the database in background.
 - For the extra mile I included redis in the project working as an LRU. I create a hashed key based on the date range and store the results from the database there, so requests with already queried date ranges will be obtained without need to hit the database. I set the keys with a ttl of 60 seconds so results don't get inconsistent with the database in case of updates.
 - The project is fully dockerized so it can run in any host.
@@ -32,9 +32,9 @@
 The project is structured in 3 folders:
 - **api**: Files related with the Flask application itself, bootstraps the services and initializes the endpoint
 - **contexts**: Here are the different bounded contexts, in this case there's just an events bounded context. In each context there's a folder for each layer.
-    - **Application**: Here's the use cases for the events context
+    - **Application**: Here's the use cases for the events context and I would place also commands, queries and handlers in case cqrs is used or there are domain events to be handled.
     - **Domain**: Here's the aggregate root, value objects, and needed interfaces
-    - **Infrastrucure**: Here's the implementation of the persistence repository, the cache repository, and the event provider 
+    - **Infrastructure**: Here's the implementation of the persistence repository, the cache repository, and the event provider 
     - **Presentation**: Here's the controllers in charge of transforming the data to adequate responses
 - **shared**: In this folder I put all things that could be used in any contexts, such as the aggregate root base class and the date range value object
 
@@ -67,7 +67,7 @@ To open the api documentation execute:
 make docs
 ```
 
-To run the enpoint on the web browser with specific data run (modify the dates as you want):
+To run the endpoint on the web browser with specific data run (modify the dates as you want):
 
 ```bash
 make search start_date=2017-07-21T17:32:28Z end_date=2021-07-21T17:32:28Z
@@ -106,7 +106,7 @@ In a real life scenario this endpoint should come also with pagination, being th
   - **400 Bad Request:** If the query parameters are invalid.
   - **500 Internal Server Error:** In case of server error
 
-With this design in mind and considering the possible extension of this endpoint with new parameters (category, city, etc), I would also implement for the repository the Criteria pattern (https://github.com/jperdior/user-service/blob/main/internal/user/domain/repository.go)
+With this design in mind, and considering the possible extension of this endpoint with new parameters (category, city, etc), I would also implement for the repository the Criteria pattern (https://github.com/jperdior/user-service/blob/main/internal/user/domain/repository.go)
 
 Also the service should include an /status endpoint returning a 200 code response to serve as healtcheck for the service.
 
