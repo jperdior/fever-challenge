@@ -64,7 +64,7 @@ downgrade: ### Downgrade the database
 ###@ Tests
 
 test: ### Run the tests
-	@${DOCKER_COMPOSE} exec ${API} pytest
+	@${DOCKER_COMPOSE} exec ${API} poetry run pytest
 
 ###@ Utils
 

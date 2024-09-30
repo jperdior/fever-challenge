@@ -2,7 +2,7 @@
 name = "fever-challenge"
 version = "0.1.0"
 description = ""
-authors = ["Julio Perdiguer <julio.perdiguer@zolar.de>"]
+authors = ["Julio Perdiguer <julio.perdiguer@gmail.com>"]
 readme = "README.md"
 packages = [{ include = "fever-challenge", from = "src" }]
 
@@ -28,6 +28,3 @@ pytest = "^8.3.3"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[project.scripts]
-wiki = "events:fetch"

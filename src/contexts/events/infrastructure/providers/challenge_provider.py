@@ -3,6 +3,7 @@
 from xml.etree import ElementTree
 import logging
 import requests
+from typing import List
 from src.contexts.events.domain.provider import EventProvider
 from src.contexts.events.domain.event import Event
 from src.contexts.events.domain.value_objects import EventTitleVo, EventBaseIdVo
@@ -20,16 +21,20 @@ class ChallengeProvider(EventProvider):
     PROVIDER_URL = "https://provider.code-challenge.feverup.com/api/events"
     SELL_MODE_TRUE = "online"
 
-    def fetch_events(self) -> list[Event]:
+    def fetch_events(self) -> List[Event]:
         response = requests.get(self.PROVIDER_URL)
         if response.status_code == 200:
             events_data = response.text
             return self.parse_events(events_data)
         return []
 
-    def parse_events(self, data: str) -> list[Event]:
-        events = []
-        root = ElementTree.fromstring(data)
+    def parse_events(self, data: str) -> List[Event]:
+        events: List[Event] = []
+        try:
+            root = ElementTree.fromstring(data)
+        except ElementTree.ParseError as e:
+            logging.error("Could not parse data due to %s.", e)
+            return events
 
         for base_event in root.findall("output/base_event"):
             base_event_id = base_event.get("base_event_id", "")
