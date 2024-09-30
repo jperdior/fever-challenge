@@ -63,8 +63,8 @@ downgrade: ### Downgrade the database
 
 ###@ Tests
 
-test:
-	@${DOCKER_COMPOSE} exec ${TEST} pytest
+test: ### Run the tests
+	@${DOCKER_COMPOSE} exec ${API} pytest
 
 ###@ Utils
 
@@ -78,7 +78,7 @@ fetch-events: ## Fetch events from the provider
 	@${DOCKER_COMPOSE} exec ${API} flask events fetch
 
 lint: ### Lint the project
-	@${DOCKER_COMPOSE} exec ${API} black src/
+	@${DOCKER_COMPOSE} exec ${API} black src/ tests/
 
 mypy: ### Type check the project
 	@${DOCKER_COMPOSE} exec ${API} mypy src/
