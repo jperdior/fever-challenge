@@ -1,5 +1,6 @@
 """Domain value objects for events context."""
 
+
 class EventBaseIdVo:
     """Value object for event base id."""
 

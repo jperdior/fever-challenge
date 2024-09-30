@@ -1,4 +1,5 @@
 """Redis cache implementation."""
+
 import os
 import redis as redis_client
 

@@ -2,6 +2,7 @@
 
 from datetime import datetime
 
+
 class DateRangeVo:
     """Value Object for date ranges."""
 
@@ -25,7 +26,6 @@ class DateRangeVo:
             except ValueError:
                 continue
         raise ValueError(f"Invalid datetime format: {datetime_str}")
-
 
     def guard_values(self) -> None:
         """Guard method to check the values."""

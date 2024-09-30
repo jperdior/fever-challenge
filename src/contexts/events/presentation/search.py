@@ -6,7 +6,7 @@ from src.shared.domain.vo import DateRangeVo
 from src.shared.presentation.controller import ControllerInterface
 from src.contexts.events.application.search.service import SearchService
 from src.contexts.events.domain.event import Event
-from src.contexts.events.presentation.dto import SearchResponseDto
+from src.contexts.events.presentation.dto import EventResponseDto, SearchResponseDto
 from src.shared.presentation.dto import ResponseDto
 
 
@@ -35,4 +35,17 @@ class SearchController(ControllerInterface):
             return SearchResponseDto(data=None, error=BadRequestError(message=str(e)))
 
         events: list[Event] = self.search_service.execute(date_range=date_range)
-        return SearchResponseDto(data=events, error=None)
+        events_dto = [
+            EventResponseDto(
+                id=event.id,
+                title=event.title,
+                start_date=event.start_date,
+                start_time=event.start_time,
+                end_date=event.end_date,
+                end_time=event.end_time,
+                min_price=event.min_price,
+                max_price=event.max_price,
+            )
+            for event in events
+        ]
+        return SearchResponseDto(data=events_dto, error=None)

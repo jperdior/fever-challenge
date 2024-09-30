@@ -5,8 +5,7 @@ services:
         context: ../..
         dockerfile: ops/docker/Dockerfile.local
         args:
-          FLASK_APP: run.py
-          FLASK_ENV: development
+          ENV: dev
       ports:
         - "5000:5000"
       volumes:

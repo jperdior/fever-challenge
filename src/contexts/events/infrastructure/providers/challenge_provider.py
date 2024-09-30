@@ -36,7 +36,9 @@ class ChallengeProvider(EventProvider):
             title = base_event.get("title", "")
             sell_mode_string = base_event.get("sell_mode", "")
             sell_mode = sell_mode_string == self.SELL_MODE_TRUE
-            logging.info("Processing event with title: %s and base id: %s", title, base_event_id)
+            logging.info(
+                "Processing event with title: %s and base id: %s", title, base_event_id
+            )
             for event in base_event.findall("event"):
                 event_start_date = event.get("event_start_date", "")
                 event_end_date = event.get("event_end_date", "")
@@ -49,12 +51,12 @@ class ChallengeProvider(EventProvider):
                     if price_str is not None:
                         price = float(price_str)
                     else:
-                        price = 0.0 
+                        price = 0.0
                     min_price = min(min_price, price)
                     max_price = max(max_price, price)
 
                 try:
-                    event_instance = Event(
+                    event_instance = Event.create(
                         base_id=EventBaseIdVo(base_event_id),
                         title=EventTitleVo(title),
                         date_range=DateRangeVo(
@@ -66,7 +68,7 @@ class ChallengeProvider(EventProvider):
                         sell_mode=sell_mode,
                     )
                 except (ValueError, TypeError) as e:
-                    logging.warning("Event instance could not be parsed due to %s.",e)
+                    logging.warning("Event instance could not be parsed due to %s.", e)
                     continue
 
                 events.append(event_instance)

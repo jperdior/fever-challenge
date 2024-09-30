@@ -17,7 +17,7 @@ from src.shared.infrastructure.cache.redis import CACHE
 event_repository = EventRepositoryImpl(db=DB)
 event_cache = EventCache(cache=CACHE)
 
-search_service = SearchService(repository=event_repository,cache=event_cache)
+search_service = SearchService(repository=event_repository, cache=event_cache)
 search_controller = SearchController(search_service=search_service)
 
 challenge_provider = ChallengeProvider()

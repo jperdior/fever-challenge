@@ -1,6 +1,7 @@
 PWD = $(shell pwd)
 PROJECT_NAME = fever-challenge
 API=api
+TEST=test
 DOCKER_COMPOSE=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.yml
 DOCKER_COMPOSE_ALL=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.yml -f ${PWD}/ops/docker/docker-compose.fetcher.yml
 GREEN=\033[0;32m
@@ -72,6 +73,8 @@ downgrade: ### Downgrade the database
 
 ###@ Tests
 
+test:
+	pytest
 
 ###@ Utils
 

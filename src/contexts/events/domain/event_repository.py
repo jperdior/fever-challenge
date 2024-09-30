@@ -8,7 +8,7 @@ class EventRepository(ABC):
     """Abstract class for event repositories."""
 
     @abstractmethod
-    def find_by_base_id(self, base_id: int) -> Event|None:
+    def find_by_base_id(self, base_id: int) -> Event | None:
         """Find events by base id."""
 
     @abstractmethod

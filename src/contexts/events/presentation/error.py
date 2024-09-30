@@ -13,6 +13,6 @@ class BadRequestError(Error):
 class InternalServerError(Error):
     """Internal Server Error"""
 
-    def __init__(self, message: str|None = None):
+    def __init__(self, message: str | None = None):
         if message:
             super().__init__(message, 500)
