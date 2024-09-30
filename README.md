@@ -25,6 +25,7 @@
 - For the extra mile I included redis in the project working as an LRU. I create a hashed key based on the date range and store the results from the database there, so requests with already queried date ranges will be obtained without need to hit the database. I set the keys with a ttl of 60 seconds so results don't get inconsistent with the database in case of updates.
 - The project is fully dockerized so it can run in any host.
 - There are several mypy errors I was unable to solve
+- I was unable to configure in flagger the datetime format and the order of the properties in the response
 
 ## Project Structure
 
@@ -39,7 +40,7 @@ The project is structured in 3 folders:
 
 ## How to run and other useful commands
 
-Run ```bash make``` to see a list of available commands
+Run ```make``` to see a list of available commands
 
 
 To run the application without the provider fetcher running in background execute:
@@ -106,6 +107,8 @@ In a real life scenario this endpoint should come also with pagination, being th
   - **500 Internal Server Error:** In case of server error
 
 With this design in mind and considering the possible extension of this endpoint with new parameters (category, city, etc), I would also implement for the repository the Criteria pattern (https://github.com/jperdior/user-service/blob/main/internal/user/domain/repository.go)
+
+Also the service should include an /status endpoint returning a 200 code response to serve as healtcheck for the service.
 
 ### Fetching from providers
 

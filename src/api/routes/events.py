@@ -88,7 +88,7 @@ def search():
       500:
         description: Internal server error
     """
-    events = search_controller.execute(request)
-    if events.error:
-        return jsonify(events.error.to_dict()), events.error.code
-    return jsonify(events.to_dict())
+    result = search_controller.execute(request)
+    if result.error:
+        return jsonify(result.to_dict()), result.error.code
+    return jsonify(result.to_dict())
