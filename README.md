@@ -9,22 +9,22 @@
 
 ## Decision making
 
-I've decided to use Flask for this challenge as it is a fast and easy to use framework to build a rest API.
-As a testing suite I decided to use pytest as I had some experience with it. I included only unit tests in this challenge as it was time consuming to prepare the environment also for functional tests.
-The chosen architecture is DDD to maintain clear separation of the framework with the business logic. I also apply the repository pattern to maintain separation of concerns and in case the future either the db, the cache or the provider changes the use cases don't need to be modified.
-To persist the events I've chosen PostgreSQL in prevision that this service could be expanded with relations, but as it is a MongoDB or DynamoDB would be also a valid approach.
-I created a Flask command that retrieves the events from the provider and stores them in the database in background.
-For the extra mile I included redis in the project working as an LRU. I create a hashed key based on the date range and store the results from the database there, so requests with already queried date ranges will be obtained without need to hit the database. I set the keys with a ttl of 60 seconds so results don't get inconsistent with the database in case of updates.
-The project is fully dockerized so it can run in any host.
+-I've decided to use Flask for this challenge as it is a fast and easy to use framework to build a rest API.
+-As a testing suite I decided to use pytest as I had some experience with it. I included only unit tests in this challenge as it was time consuming to prepare the environment also for functional tests.
+-The chosen architecture is DDD to maintain clear separation of the framework with the business logic. I also apply the repository pattern to maintain separation of concerns and in case the future either the db, the cache or the provider changes the use cases don't need to be modified.
+-To persist the events I've chosen PostgreSQL in prevision that this service could be expanded with relations, but as it is a MongoDB or DynamoDB would be also a valid approach.
+-I created a Flask command that retrieves the events from the provider and stores them in the database in background.
+-For the extra mile I included redis in the project working as an LRU. I create a hashed key based on the date range and store the results from the database there, so requests with already queried date ranges will be obtained without need to hit the database. I set the keys with a ttl of 60 seconds so results don't get inconsistent with the database in case of updates.
+-The project is fully dockerized so it can run in any host.
 
 The project is structured in 3 folders:
-- api: Files related with the Flask application itself, bootstraps the services and initializes the endpoint
-- contexts: Here are the different bounded contexts, in this case there's just an events bounded contexts. In each context there's a folder for each layer.
-    - Application: Here's the use cases for the events context
-    - Domain: Here's the aggregate root, value objects, and needed interfaces
-    - Infrastrucure: Here's the implementation of the persistence repository, the cache repository, and the event provider 
-    - Presentation: Here's the controllers in charge of transforming the data to adequate responses
-- shared: In this folder I put all things that could be used in any contexts
+- **api**: Files related with the Flask application itself, bootstraps the services and initializes the endpoint
+- **contexts**: Here are the different bounded contexts, in this case there's just an events bounded contexts. In each context there's a folder for each layer.
+    - **Application**: Here's the use cases for the events context
+    - **Domain**: Here's the aggregate root, value objects, and needed interfaces
+    - **Infrastrucure**: Here's the implementation of the persistence repository, the cache repository, and the event provider 
+    - **Presentation**: Here's the controllers in charge of transforming the data to adequate responses
+- **shared**: In this folder I put all things that could be used in any contexts
 
 
 ## Real life considerations
@@ -43,7 +43,7 @@ In a real life scenario this endpoint should come also with pagination, being th
   - `sortDir`: (string, optional) The direction to sort the results (`asc` or `desc`).
 
 - **Response:**
-  - **200 OK:** List of events
+  - **200 OK:** page, pageSize, totalRows, totalPages, list of events
   - **404 Not Found:** If no events are found for the given date range.
   - **400 Bad Request:** If the query parameters are invalid.
   - **500 Internal Server Error:** In case of server error
