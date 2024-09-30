@@ -22,12 +22,10 @@ class EventCache(CacheRepository):
             return []
         return self._deserialize_events(data)
 
-
-    def setex(self, key: str, value: List [Event], ttl: int) -> None:
+    def setex(self, key: str, value: List[Event], ttl: int) -> None:
         """Set a value in the cache with a TTL."""
         data = self._serialize_events(value)
         self.cache.setex(key, ttl, data)
-
 
     def generate_cache_key(self, start_date: datetime, end_date: datetime) -> str:
         """Generates a cache key"""

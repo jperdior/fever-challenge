@@ -36,7 +36,7 @@ stop: ### Stop the project
 restart: stop start
 
 lint: ### Lint the project
-	@${DOCKER_COMPOSE} exec ${API} black src/
+	@${DOCKER_COMPOSE} exec ${API} black src/ tests/
 
 mypy: ### Type check the project
 	@${DOCKER_COMPOSE} exec ${API} mypy src/

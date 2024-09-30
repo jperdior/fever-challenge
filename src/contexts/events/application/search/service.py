@@ -27,8 +27,7 @@ class SearchService:
         events = self.repository.find_by_range(
             start_date=date_range.start_datetime, end_date=date_range.end_datetime
         )
-
-        self.cache.setex(cache_key, events, 60)
+        if events:
+            self.cache.setex(cache_key, events, 60)
 
         return events
-

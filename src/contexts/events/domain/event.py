@@ -92,7 +92,9 @@ class Event(AggregateRoot):
             aggregate_id=data["id"],
             base_id=data["base_id"],
             title=data["title"],
-            start_datetime=datetime.strptime(data["start_datetime"], "%Y-%m-%d %H:%M:%S"),
+            start_datetime=datetime.strptime(
+                data["start_datetime"], "%Y-%m-%d %H:%M:%S"
+            ),
             end_datetime=datetime.strptime(data["end_datetime"], "%Y-%m-%d %H:%M:%S"),
             min_price=data["min_price"],
             max_price=data["max_price"],

@@ -2,12 +2,11 @@
 
 from typing import List, Union
 from dataclasses import dataclass
-from src.contexts.events.domain.event import Event
 from src.shared.presentation.dto import Error, ResponseDto
 
 
 @dataclass
-class EventResponseDto():
+class EventResponseDto:
     """Event Response DTO"""
 
     id: str
