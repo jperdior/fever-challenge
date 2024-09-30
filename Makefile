@@ -1,61 +1,51 @@
 PWD = $(shell pwd)
 PROJECT_NAME = fever-challenge
 API=api
-TEST=test
 DOCKER_COMPOSE=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.yml
 DOCKER_COMPOSE_ALL=docker-compose -p ${PROJECT_NAME} -f ${PWD}/ops/docker/docker-compose.yml -f ${PWD}/ops/docker/docker-compose.fetcher.yml
 GREEN=\033[0;32m
 RESET=\033[0m
+UNAME := $(shell uname)
 
 .EXPORT_ALL_VARIABLES:
 
-# this is godly
-# https://news.ycombinator.com/item?id=11939200
 .PHONY: help
 help:
 ifeq ($(UNAME), Linux)
 	@grep -P '^[a-zA-Z_-]+:.*?### .*$$' $(MAKEFILE_LIST) | sort | \
 		awk 'BEGIN {FS = ":.*?### "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 else
-	@# this is not tested, but prepared in advance for you, Mac drivers
 	@awk -F ':.*####' '$$0 ~ FS {printf "%15s%s\n", $$1 ":", $$2}' \
 		$(MAKEFILE_LIST) | grep -v '@awk' | sort
 endif
 
+###@ Docker
+
 start: build run ### Start the project
 
-build: ### Build the project
+build:
 	@${DOCKER_COMPOSE} build
 
-run: ### Run the project
+run:
 	@${DOCKER_COMPOSE} up -d
 
 stop: ### Stop the project
 	@${DOCKER_COMPOSE} down
 
-restart: stop start
+restart: stop start ### Restart the project
 
-lint: ### Lint the project
-	@${DOCKER_COMPOSE} exec ${API} black src/ tests/
+restart-all: stop-all start-all ### Restart the project with fetcher
 
-mypy: ### Type check the project
-	@${DOCKER_COMPOSE} exec ${API} mypy src/
+start-all: build-all run-all ### Start the project with fetcher
 
-restart-all: stop-all start-all ### Restart the all
-
-start-all: build-all run-all ### Start the all
-
-build-all: ### Build the all
+build-all:
 	@${DOCKER_COMPOSE_ALL} build
 
-run-all: ### Run the all
+run-all:
 	@${DOCKER_COMPOSE_ALL} up -d
 
-stop-all: ### Stop the all
+stop-all: ## Stop the project with fetcher
 	@${DOCKER_COMPOSE_ALL} down
-
-logs: ### Show logs
-	@${DOCKER_COMPOSE} logs -f
 
 ###@ Migration
 
@@ -74,12 +64,21 @@ downgrade: ### Downgrade the database
 ###@ Tests
 
 test:
-	@${DOCKER_COMPOSE} exec ${API} pytest
+	@${DOCKER_COMPOSE} exec ${TEST} pytest
 
 ###@ Utils
 
-docs:
+docs: ### Open the API documentation
 	open http://localhost:5000/apidocs
 
-fetch-events:
+search: ### Search events by date range. Example make search start_date=2017-07-21T17:32:28Z end_date=2021-07-21T17:32:28Z
+	open http://localhost:5000/search?starts_at=${start_date}&ends_at=${end_date}
+
+fetch-events: ## Fetch events from the provider
 	@${DOCKER_COMPOSE} exec ${API} flask events fetch
+
+lint: ### Lint the project
+	@${DOCKER_COMPOSE} exec ${API} black src/
+
+mypy: ### Type check the project
+	@${DOCKER_COMPOSE} exec ${API} mypy src/
