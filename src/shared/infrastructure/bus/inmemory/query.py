@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict
 
-from src.shared.infrastructure.bus.query import QueryBus, Handler
+from src.shared.domain.bus.query import QueryBus, Handler
 
 
 class QueryBusImpl(QueryBus):

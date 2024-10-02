@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from src.contexts.events.application.search.service import SearchService
 from src.contexts.events.domain.event import Event
 from src.contexts.events.domain.exception import DomainError
-from src.shared.infrastructure.bus.query import Query, Handler
+from src.shared.domain.bus.query import Query, Handler
 
 
 class SearchEventsQueryType:

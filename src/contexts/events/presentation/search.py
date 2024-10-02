@@ -7,7 +7,7 @@ from src.contexts.events.domain.event import Event
 from src.contexts.events.presentation.dto import EventResponseDto, SearchResponseDto
 from src.shared.presentation.dto import ResponseDto
 from src.contexts.events.application.search.query import SearchEventsQuery
-from src.shared.infrastructure.bus.query import QueryBus
+from src.shared.domain.bus.query import QueryBus
 
 
 class SearchController(ControllerInterface):

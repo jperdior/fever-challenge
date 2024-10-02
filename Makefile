@@ -82,3 +82,9 @@ lint: ### Lint the project
 
 mypy: ### Type check the project
 	@${DOCKER_COMPOSE} exec ${API} mypy src/
+
+rabbitmq: ### Open the RabbitMQ management
+	open http://localhost:15672
+
+consumer: ### Start the consumer
+	@${DOCKER_COMPOSE} exec ${API} celery -A src.workers.command_worker worker --loglevel=info

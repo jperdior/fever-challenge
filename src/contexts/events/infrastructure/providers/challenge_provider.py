@@ -34,6 +34,7 @@ class ChallengeProvider(EventProvider):
                         event_bytes = ElementTree.tostring(base_event, encoding="utf-8")
                         event_string = event_bytes.decode("utf-8")
                         events_data.append(event_string)
+                    return events_data
 
                 except ElementTree.ParseError as e:
                     logging.error("Could not parse data due to %s.", e)

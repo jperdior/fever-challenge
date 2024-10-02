@@ -5,7 +5,7 @@ from src.contexts.events.application.parse_and_create.command import (
     ParseAndCreateCommand,
 )
 from src.contexts.events.domain.provider import EventProvider
-from src.shared.infrastructure.bus.command import CommandBus
+from src.shared.domain.bus.command import CommandBus
 
 
 class FetchEventsService:

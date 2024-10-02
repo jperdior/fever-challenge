@@ -3,15 +3,15 @@
 import json
 from typing import Dict, Type
 from celery import Celery
-from src.shared.infrastructure.bus.command import Command, CommandBus, Handler
+from src.shared.domain.bus.command import CommandBus, Command, Handler
 
 
 class CommandBusImpl(CommandBus):
     """Celery command bus implementation"""
 
-    def __init__(self, celery_broker_url: str):
+    def __init__(self, celery_app: Celery):
         # Initialize Celery app
-        self.celery_app = Celery("command_bus", broker=celery_broker_url)
+        self.celery_app = celery_app
         self.handlers: Dict[str, Handler] = {}
 
     def dispatch(self, command: Command) -> None:

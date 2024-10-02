@@ -5,6 +5,7 @@ import os
 from flask import Flask
 from flasgger import Swagger
 from flask_migrate import Migrate
+from celery import Celery
 from src.api.routes.events import events_routes
 from src.api.routes.status import status_bp
 from src.api.command.events import events_commands
@@ -34,46 +35,42 @@ from src.contexts.events.application.parse_and_create.service import (
     ParseAndCreateService,
 )
 from src.shared.infrastructure.cache.redis import CACHE
-from src.contexts.events.infrastructure.bus.inmemory.query import QueryBusImpl
-from src.contexts.events.infrastructure.bus.rabittmq.command import CommandBusImpl
-
-POSTGRES_DB = os.getenv("POSTGRES_DB", "fever_db")
-POSTGRES_USER = os.getenv("POSTGRES_USER", "fever_user")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "fever_pass")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "db")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", str(5432))
-
-SQLALCHEMY_DATABASE_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+from src.shared.infrastructure.bus.inmemory.query import QueryBusImpl
+from src.shared.infrastructure.bus.rabittmq.command import CommandBusImpl
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 if not CELERY_BROKER_URL:
     raise ValueError("CELERY_BROKER_URL is not set")
 
-
+def create_command_celery_app():
+    """Create a Celery app for the command bus"""
+    command_celery_app = Celery("command_bus", broker=CELERY_BROKER_URL)
+    return command_celery_app
 
 def create_app():
     """Run the API"""
-
+    command_celery_app = create_command_celery_app()
     event_repository = EventRepositoryImpl(db=DB)
     event_cache = EventCache(cache=CACHE)
 
-    query_bus = QueryBusImpl()
-    command_bus = CommandBusImpl(celery_broker_url=CELERY_BROKER_URL)
+    challenge_provider = ChallengeProvider()
+    parser = ChallengeEventParser()
 
+    query_bus = QueryBusImpl()
+    command_bus = CommandBusImpl(celery_app=command_celery_app)
+
+    search_controller = SearchController(query_bus=query_bus)
 
     search_service = SearchService(repository=event_repository, cache=event_cache)
-    search_controller = SearchController(query_bus=query_bus)
+    fetch_service = FetchEventsService(provider=challenge_provider, command_bus=command_bus)
+    parse_and_create_service = ParseAndCreateService(
+        repository=event_repository, parser=parser
+    )
+    
     query_bus.register(
         SearchEventsQuery.type(), SearchEventsQueryHandler(service=search_service)
     )
 
-    challenge_provider = ChallengeProvider()
-    fetch_service = FetchEventsService(provider=challenge_provider, command_bus=command_bus)
-
-    parser = ChallengeEventParser()
-    parse_and_create_service = ParseAndCreateService(
-        repository=event_repository, parser=parser
-    )
     command_bus.register(
         ParseAndCreateCommand, ParseAndCreateHandler(service=parse_and_create_service)
     )

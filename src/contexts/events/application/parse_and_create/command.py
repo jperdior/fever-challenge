@@ -1,6 +1,6 @@
 """Command to parse and create event"""
 
-from src.shared.infrastructure.bus.command import Command, Handler
+from src.shared.domain.bus.command import Command, Handler
 from src.contexts.events.application.parse_and_create.service import (
     ParseAndCreateService,
 )
