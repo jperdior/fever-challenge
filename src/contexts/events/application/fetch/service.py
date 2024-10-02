@@ -1,42 +1,23 @@
 """Service to fetch events"""
 
 import logging
+from src.contexts.events.application.parse_and_create.command import (
+    ParseAndCreateCommand,
+)
 from src.contexts.events.domain.provider import EventProvider
-from src.contexts.events.domain.event_repository import EventRepository
+from src.shared.infrastructure.bus.command import CommandBus
 
 
 class FetchEventsService:
     """Fetch Events Service"""
 
-    def __init__(self, provider: EventProvider, repository: EventRepository):
+    def __init__(self, provider: EventProvider, command_bus: CommandBus):
         self.provider = provider
-        self.repository = repository
+        self.command_bus = command_bus
 
     def execute(self) -> None:
         """Execute use case"""
-        events = self.provider.fetch_events()
-        for event in events:
-            exists = self.repository.find_by_base_id(base_id=event.base_id)
-            if not exists:
-                logging.info(
-                    "Event %s with base ID %d does not exist. Creating it.",
-                    event.title,
-                    event.base_id,
-                )
-                self.repository.save(event=event)
-            else:
-                logging.info(
-                    "Event %s with base ID %d and uuid %s exists. Updating it.",
-                    event.title,
-                    event.base_id,
-                    exists.id,
-                )
-                exists.update(
-                    title=event.title,
-                    start_datetime=event.start_datetime,
-                    end_datetime=event.end_datetime,
-                    min_price=event.min_price,
-                    max_price=event.max_price,
-                    sell_mode=event.sell_mode,
-                )
-                self.repository.save(event=exists)
+        events_data = self.provider.fetch_events()
+        for event_data in events_data:
+            self.command_bus.dispatch(ParseAndCreateCommand(event_data=event_data))
+            logging.info("Event dispatched: %s", event_data)

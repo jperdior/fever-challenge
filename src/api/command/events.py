@@ -2,14 +2,19 @@
 
 from flask import Blueprint
 import click
-from src.api.config.config import fetch_service
+from src.contexts.events.application.fetch.service import FetchEventsService
 
-events_commands_bp = Blueprint("events", __name__)
+def events_commands(fetch_service: FetchEventsService):
+    """Events commands"""
+
+    events_commands_bp = Blueprint("events", __name__)
 
 
-@events_commands_bp.cli.command("fetch")
-def fetch_events():
-    """Fetchs, parses and stores evenst from a provider"""
-    click.echo("Here are the events...")
-    fetch_service.execute()
-    click.echo("Events fetched!")
+    @events_commands_bp.cli.command("fetch")
+    def fetch_events():
+        """Fetchs, parses and stores evenst from a provider"""
+        click.echo("Here are the events...")
+        fetch_service.execute()
+        click.echo("Events fetched!")
+
+    return events_commands_bp

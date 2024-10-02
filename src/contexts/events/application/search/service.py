@@ -14,8 +14,10 @@ class SearchService:
         self.repository = repository
         self.cache = cache
 
-    def execute(self, date_range: DateRangeVo) -> List[Event]:
+    def execute(self, starts_at: str, ends_at: str) -> List[Event]:
         """Execute use case"""
+        date_range = DateRangeVo(start_datetime=starts_at, end_datetime=ends_at)
+
         cache_key = self.cache.generate_cache_key(
             date_range.start_datetime, date_range.end_datetime
         )

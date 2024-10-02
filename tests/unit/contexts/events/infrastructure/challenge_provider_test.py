@@ -1,4 +1,5 @@
 """Test for ChallengeProvider class"""
+
 import pytest
 import requests
 from unittest.mock import patch
@@ -37,6 +38,7 @@ def mock_response():
     """
     return xml_data
 
+
 @pytest.fixture
 def mock_invalid_date_response():
     xml_data = """
@@ -54,6 +56,7 @@ def mock_invalid_date_response():
     </eventList>
     """
     return xml_data
+
 
 @pytest.fixture
 def invalid_xml_response():
@@ -81,6 +84,7 @@ def test_fetch_events(mock_get, mock_response):
     assert events[2].min_price == 65.00
     assert events[2].max_price == 75.00
 
+
 @patch("requests.get")
 def test_fetch_events_bad_response(mock_get, mock_invalid_date_response):
     """Should return an empty list of events."""
@@ -91,6 +95,7 @@ def test_fetch_events_bad_response(mock_get, mock_invalid_date_response):
     events = provider.fetch_events()
 
     assert len(events) == 0
+
 
 @patch("requests.get")
 def test_fetch_events_invalid_xml_response(mock_get, invalid_xml_response):
