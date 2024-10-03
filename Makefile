@@ -74,9 +74,6 @@ docs: ### Open the API documentation
 search: ### Search events by date range. Example make search start_date=2017-07-21T17:32:28Z end_date=2021-07-21T17:32:28Z
 	open http://localhost:5000/search?starts_at=${start_date}&ends_at=${end_date}
 
-fetch-events: ## Fetch events from the provider
-	@${DOCKER_COMPOSE} exec ${API} flask events fetch
-
 lint: ### Lint the project
 	@${DOCKER_COMPOSE} exec ${API} black src/ tests/
 
@@ -85,6 +82,9 @@ mypy: ### Type check the project
 
 rabbitmq: ### Open the RabbitMQ management
 	open http://localhost:15672
+
+fetch-events: ## Fetch events from the provider
+	@${DOCKER_COMPOSE} exec ${API} flask events fetch
 
 consumer: ### Start the consumer
 	@${DOCKER_COMPOSE} exec ${API} $ celery -A src.workers.make_celery.celery_app worker --loglevel INFO
