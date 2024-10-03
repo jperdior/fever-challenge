@@ -1,5 +1,4 @@
-"""Configuration file for the API module"""
-
+"""Bootstrap file file for the API"""
 import os
 
 from flask import Flask
@@ -41,12 +40,6 @@ from src.shared.infrastructure.bus.rabittmq.command import CommandBusImpl
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 if not CELERY_BROKER_URL:
     raise ValueError("CELERY_BROKER_URL is not set")
-
-# def create_command_celery_app():
-#     """Create a Celery app for the command bus"""
-#     command_celery_app = Celery("command_bus", broker=CELERY_BROKER_URL)
-#     return command_celery_app
-
 
 def celery_init_command(app: Flask) -> Celery:
     """Initialize the Celery app"""

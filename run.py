@@ -1,6 +1,5 @@
 """Entry point for the application."""
-from src.api.config.bootstrap import create_app
-
+from src.api.bootstrap import create_app
 app = create_app()
 
 if __name__ == "__main__":

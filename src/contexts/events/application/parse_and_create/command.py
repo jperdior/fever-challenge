@@ -13,7 +13,12 @@ class ParseAndCreateCommand(Command):
         self.event_data = event_data
 
     def type(self) -> str:
+        """Command type"""
         return "ParseAndCreateCommand"
+    
+    def __eq__(self, other):
+        return isinstance(other, ParseAndCreateCommand) and self.event_data == other.event_data
+
 
 
 class ParseAndCreateHandler(Handler):
