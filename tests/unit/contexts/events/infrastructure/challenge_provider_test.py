@@ -70,19 +70,10 @@ def test_fetch_events(mock_get, mock_response):
     mock_get.return_value.text = mock_response
 
     provider = ChallengeProvider()
-    events = provider.fetch_events()
+    events_data = provider.fetch_events()
 
-    assert len(events) == 3
-    assert isinstance(events[0], Event)
-    assert events[0].title == "Camela en concierto"
-    assert events[0].min_price == 15.00
-    assert events[0].max_price == 30.00
-    assert events[1].title == "Pantomima Full"
-    assert events[1].min_price == 55.00
-    assert events[1].max_price == 55.00
-    assert events[2].title == "Los Morancos"
-    assert events[2].min_price == 65.00
-    assert events[2].max_price == 75.00
+    assert len(events_data) == 3
+    assert isinstance(events_data[0], str)
 
 
 @patch("requests.get")

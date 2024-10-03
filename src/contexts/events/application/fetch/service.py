@@ -20,4 +20,3 @@ class FetchEventsService:
         events_data = self.provider.fetch_events()
         for event_data in events_data:
             self.command_bus.dispatch(ParseAndCreateCommand(event_data=event_data))
-            logging.info("Event dispatched: %s", event_data)

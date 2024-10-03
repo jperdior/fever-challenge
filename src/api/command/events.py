@@ -4,11 +4,11 @@ from flask import Blueprint
 import click
 from src.contexts.events.application.fetch.service import FetchEventsService
 
+
 def events_commands(fetch_service: FetchEventsService):
     """Events commands"""
 
     events_commands_bp = Blueprint("events", __name__)
-
 
     @events_commands_bp.cli.command("fetch")
     def fetch_events():

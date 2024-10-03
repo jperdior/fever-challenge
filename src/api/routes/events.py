@@ -1,6 +1,8 @@
 """Events routes"""
+
 from flask import Blueprint, request, jsonify
 from src.contexts.events.presentation.search import SearchController
+
 
 def events_routes(search_controller: SearchController):
     """Events routes"""

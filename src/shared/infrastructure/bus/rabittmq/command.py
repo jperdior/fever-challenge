@@ -1,6 +1,7 @@
-# src/shared/infrastructure/bus/command.py
+"""RabbitMQ command bus implementation"""
 
 import json
+import logging
 from typing import Dict, Type
 from celery import Celery
 from src.shared.domain.bus.command import CommandBus, Command, Handler
@@ -20,7 +21,7 @@ class CommandBusImpl(CommandBus):
         if command_type not in self.handlers:
             raise ValueError(f"No handler registered for command type '{command_type}'")
         command_data = json.dumps(command.__dict__)
-
+        logging.info("Event dispatched: %s", command_data)
         self.celery_app.send_task(command_type, args=[command_data])
 
     def register(self, command_type: Type[Command], handler: Handler) -> None:

@@ -5,7 +5,7 @@ import os
 from flask import Flask
 from flasgger import Swagger
 from flask_migrate import Migrate
-from celery import Celery
+from celery import Celery, Task
 from src.api.routes.events import events_routes
 from src.api.routes.status import status_bp
 from src.api.command.events import events_commands
@@ -42,14 +42,39 @@ CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 if not CELERY_BROKER_URL:
     raise ValueError("CELERY_BROKER_URL is not set")
 
-def create_command_celery_app():
-    """Create a Celery app for the command bus"""
-    command_celery_app = Celery("command_bus", broker=CELERY_BROKER_URL)
-    return command_celery_app
+# def create_command_celery_app():
+#     """Create a Celery app for the command bus"""
+#     command_celery_app = Celery("command_bus", broker=CELERY_BROKER_URL)
+#     return command_celery_app
+
+
+def celery_init_command(app: Flask) -> Celery:
+    """Initialize the Celery app"""
+
+    class FlaskTask(Task):
+        def __call__(self, *args: object, **kwargs: object) -> object:
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery_app = Celery("command_bus", task_cls=FlaskTask)
+    celery_app.config_from_object(app.config["CELERY"])
+    celery_app.set_default()
+    app.extensions["CELERY"] = celery_app
+    return celery_app
+
 
 def create_app():
     """Run the API"""
-    command_celery_app = create_command_celery_app()
+    app = Flask(__name__)
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+    DB.init_app(app)
+    Migrate(app, DB)
+
+    app.config["CELERY"] = {"broker_url": CELERY_BROKER_URL, "task_ignore_result": True}
+    app.config.from_prefixed_env()
+    command_celery_app = celery_init_command(app)
+
     event_repository = EventRepositoryImpl(db=DB)
     event_cache = EventCache(cache=CACHE)
 
@@ -62,11 +87,13 @@ def create_app():
     search_controller = SearchController(query_bus=query_bus)
 
     search_service = SearchService(repository=event_repository, cache=event_cache)
-    fetch_service = FetchEventsService(provider=challenge_provider, command_bus=command_bus)
+    fetch_service = FetchEventsService(
+        provider=challenge_provider, command_bus=command_bus
+    )
     parse_and_create_service = ParseAndCreateService(
         repository=event_repository, parser=parser
     )
-    
+
     query_bus.register(
         SearchEventsQuery.type(), SearchEventsQueryHandler(service=search_service)
     )
@@ -75,16 +102,10 @@ def create_app():
         ParseAndCreateCommand, ParseAndCreateHandler(service=parse_and_create_service)
     )
 
-
-    app = Flask(__name__)
     Swagger(app)
 
     app.register_blueprint(status_bp)
     app.register_blueprint(events_routes(search_controller))
     app.register_blueprint(events_commands(fetch_service))
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
-    DB.init_app(app)
-    Migrate(app, DB)
 
     return app

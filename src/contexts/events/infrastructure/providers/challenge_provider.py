@@ -53,8 +53,7 @@ class ChallengeEventParser(EventParser):
     def parse(self, data: str) -> Event | None:
         """Parse the fetched data into an Event instance."""
         try:
-            root = ElementTree.fromstring(data)
-            base_event = root.find("base_event")
+            base_event = ElementTree.fromstring(data.strip())
 
             if base_event is None:
                 logging.warning("No base_event found in the XML.")
@@ -83,7 +82,6 @@ class ChallengeEventParser(EventParser):
                     price = 0.0
                 min_price = min(min_price, price)
                 max_price = max(max_price, price)
-
             event_instance = Event.create(
                 base_id=EventBaseIdVo(base_event_id),
                 title=EventTitleVo(title),

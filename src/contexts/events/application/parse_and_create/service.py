@@ -15,7 +15,10 @@ class ParseAndCreateService:
 
     def execute(self, event_data: str) -> None:
         """Execute use case"""
-        event: Event = self.parser.parse(data=event_data)
+        event: Event | None = self.parser.parse(data=event_data)
+        if event is None:
+            logging.error("Could not parse event data.")
+            return
         exists = self.repository.find_by_base_id(base_id=event.base_id)
         if not exists:
             logging.info(

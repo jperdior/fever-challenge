@@ -64,7 +64,7 @@ downgrade: ### Downgrade the database
 ###@ Tests
 
 test: ### Run the tests
-	@${DOCKER_COMPOSE} exec ${API} poetry run pytest
+	@${DOCKER_COMPOSE} exec ${API} poetry run pytest ${ARGS}
 
 ###@ Utils
 
@@ -87,4 +87,4 @@ rabbitmq: ### Open the RabbitMQ management
 	open http://localhost:15672
 
 consumer: ### Start the consumer
-	@${DOCKER_COMPOSE} exec ${API} celery -A src.workers.command_worker worker --loglevel=info
+	@${DOCKER_COMPOSE} exec ${API} $ celery -A src.workers.make_celery worker --loglevel INFO
