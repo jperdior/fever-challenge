@@ -87,4 +87,4 @@ rabbitmq: ### Open the RabbitMQ management
 	open http://localhost:15672
 
 consumer: ### Start the consumer
-	@${DOCKER_COMPOSE} exec ${API} $ celery -A src.workers.make_celery worker --loglevel INFO
+	@${DOCKER_COMPOSE} exec ${API} $ celery -A src.workers.make_celery.celery_app worker --loglevel INFO
