@@ -1,4 +1,5 @@
 """Service to fetch events"""
+
 from src.contexts.events.application.parse_and_create.command import (
     ParseAndCreateCommand,
 )

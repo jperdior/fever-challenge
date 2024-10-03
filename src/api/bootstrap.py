@@ -1,4 +1,5 @@
 """Bootstrap file file for the API"""
+
 import os
 
 from flask import Flask
@@ -9,6 +10,7 @@ from src.api.routes.events import events_routes
 from src.api.routes.status import status_bp
 from src.api.command.events import events_commands
 from src.shared.infrastructure.persistence.postgresql import DB, SQLALCHEMY_DATABASE_URI
+
 # importing for migrations
 from src.contexts.events.infrastructure.persistence.event_model import EventModel
 
@@ -41,6 +43,7 @@ from src.shared.infrastructure.bus.rabittmq.command import CommandBusImpl
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 if not CELERY_BROKER_URL:
     raise ValueError("CELERY_BROKER_URL is not set")
+
 
 def celery_init_command(app: Flask) -> Celery:
     """Initialize the Celery app"""

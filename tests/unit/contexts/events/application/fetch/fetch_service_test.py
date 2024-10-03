@@ -1,7 +1,10 @@
 """Tests for the FetchEventsService class."""
+
 from unittest.mock import MagicMock
 import pytest
-from src.contexts.events.application.parse_and_create.command import ParseAndCreateCommand
+from src.contexts.events.application.parse_and_create.command import (
+    ParseAndCreateCommand,
+)
 from src.contexts.events.domain.provider import EventProvider
 from src.shared.domain.bus.command import CommandBus
 from src.contexts.events.application.fetch.service import FetchEventsService
@@ -20,6 +23,7 @@ def command_bus():
 @pytest.fixture
 def service(provider, command_bus):
     return FetchEventsService(provider=provider, command_bus=command_bus)
+
 
 def test_service_fetches_events_and_dispatches_commands(service, provider, command_bus):
     """Test that the service fetches events and dispatches commands."""
