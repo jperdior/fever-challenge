@@ -356,6 +356,20 @@ zookeeper = ["kazoo (>=1.3.1)"]
 zstd = ["zstandard (==0.22.0)"]
 
 [[package]]
+name = "celery-types"
+version = "0.22.0"
+description = "Type stubs for Celery and its related packages"
+optional = false
+python-versions = ">=3.9,<4.0"
+files = [
+    {file = "celery_types-0.22.0-py3-none-any.whl", hash = "sha256:79a66637d1d6af5992d1dc80259d9538869941325e966006f1e795220519b9ac"},
+    {file = "celery_types-0.22.0.tar.gz", hash = "sha256:0ecad2fa5a6eded0a1f919e5e1e381cc2ff0635fe4b21db53b4661b6876d5b30"},
+]
+
+[package.dependencies]
+typing-extensions = ">=4.9.0,<5.0.0"
+
+[[package]]
 name = "certifi"
 version = "2024.8.30"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -1751,6 +1765,21 @@ files = [
 ]
 
 [[package]]
+name = "types-flask-migrate"
+version = "4.0.0.20240311"
+description = "Typing stubs for Flask-Migrate"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types-Flask-Migrate-4.0.0.20240311.tar.gz", hash = "sha256:820b427fb82456617691804e612bc4d3c32991cdf972773824852931670fa65e"},
+    {file = "types_Flask_Migrate-4.0.0.20240311-py3-none-any.whl", hash = "sha256:bc417d79b65e709e3b84c3d2d6752af2ee306ae58f415f98676f7b7a8e8c701c"},
+]
+
+[package.dependencies]
+Flask = ">=2.0.0"
+Flask-SQLAlchemy = ">=3.0.1"
+
+[[package]]
 name = "types-requests"
 version = "2.32.0.20240914"
 description = "Typing stubs for requests"
@@ -1950,4 +1979,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "6cf2637d09c7ae5c97088824acfd14d7a457df8acf3578780a87a8376d5218de"
+content-hash = "7225cc9f3b888ffab35526680582c8dff4eaab7477e65a3c4223d18afd25a886"

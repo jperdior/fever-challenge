@@ -9,6 +9,7 @@ from src.api.routes.events import events_routes
 from src.api.routes.status import status_bp
 from src.api.command.events import events_commands
 from src.shared.infrastructure.persistence.postgresql import DB, SQLALCHEMY_DATABASE_URI
+# importing for migrations
 from src.contexts.events.infrastructure.persistence.event_model import EventModel
 
 from src.contexts.events.application.parse_and_create.command import (

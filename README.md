@@ -13,18 +13,19 @@
 - Make
 - Docker
 - Docker Compose
-- Available ports 5000, 5432, 6379
+- Available ports 5000(api), 5432(postgres), 6379(redis), 5672(rabbitmq), 15672(rabbitmq-management)
 
 ## Observations and decision making
 
 - I've decided to use Flask for this challenge as it is a fast and easy to use framework to build a rest API.
 - As a testing suite I decided to use pytest as I had some experience with it. I included only unit tests in this challenge as it was time consuming to prepare the environment also for functional tests.
 - The chosen architecture is DDD to maintain clear separation of the framework with the business logic. I also apply the repository pattern to maintain separation of concerns and, in case in the future either the db, the cache, or the provider changes, the use cases don't need to be modified.
+- I implemented CQRS, it might be overkill for this exercise but to show hands-on experience, and anyway for the extra mile, to be able to parse thousands of events with hundreds of zones in a real life scenario this would be the ideal solution.
 - To persist the events I've chosen PostgreSQL in anticipation that this service could be expanded with relations, but as it is, a MongoDB or DynamoDB would be also a valid approach.
-- I created a Flask command that retrieves the events from the provider and stores them in the database in background.
+- I created a Flask command that retrieves the events from the provider and dispatches a command for each base event xml. I provide alternative solutions in the last section of this readme.
 - For the extra mile I included redis in the project working as an LRU. I create a hashed key based on the date range and store the results from the database there, so requests with already queried date ranges will be obtained without need to hit the database. I set the keys with a ttl of 60 seconds so results don't get inconsistent with the database in case of updates.
 - The project is fully dockerized so it can run in any host.
-- There are several mypy errors I was unable to solve
+- There are some mypy errors I was unable to solve
 - I was unable to configure in flagger the datetime format and the order of the properties in the response
 
 ## Project Structure
@@ -32,9 +33,9 @@
 The project is structured in 3 folders:
 - **api**: Files related with the Flask application itself, bootstraps the services and initializes the endpoint
 - **contexts**: Here are the different bounded contexts, in this case there's just an events bounded context. In each context there's a folder for each layer.
-    - **Application**: Here's the use cases for the events context and I would place also commands, queries and handlers in case cqrs is used or there are domain events to be handled.
+    - **Application**: Here's the use cases, the commands and the handlers for the events context
     - **Domain**: Here's the aggregate root, value objects, and needed interfaces
-    - **Infrastructure**: Here's the implementation of the persistence repository, the cache repository, and the event provider 
+    - **Infrastructure**: Here's the implementation of the persistence repository, the cache repository, and the event provider/parser
     - **Presentation**: Here's the controllers in charge of transforming the data to adequate responses
 - **shared**: In this folder I put all things that could be used in any contexts, such as the aggregate root base class and the date range value object
 
@@ -42,14 +43,13 @@ The project is structured in 3 folders:
 
 Run ```make``` to see a list of available commands
 
-
 To run the application without the provider fetcher running in background execute:
 
 ```bash
 make start
 ```
 
-Or to run the application with the fetcher:
+Or to run the application with the fetcher and the consumer:
 
 ```bash
 make start-all
@@ -59,6 +59,12 @@ To run the fetcher once execute:
 
 ```bash
 make fetch-events
+```
+
+To run the consumer manually execute:
+
+```bash
+make consumer
 ```
 
 To open the api documentation execute:
@@ -112,7 +118,7 @@ Also the service should include an /status endpoint returning a 200 code respons
 
 ### Fetching from providers
 
-Instead of a command running constantly in a container, a better approach would be to have a lambda on AWS that runs X times per day and publishes on any message broker (sqs, rabbitmq, etc) the fetched events so they can be consumed, processed and updated. Several consumers should be set up in order to process the amount of events in a realistic time. It could have been developed locally using localstack+terraform but I time-prioritized other things in this challenge.
+Instead of a command running constantly in a container, a better approach would be to have a lambda on AWS that runs X times per day and publishes on any message broker (sqs, rabbitmq, etc) the fetched events so they can be consumed, parsed and updated. Several consumers should be set up in order to process the amount of events in a realistic time. It could have been developed locally using localstack+terraform but I time-prioritized other things in this challenge.
 
 ### Scaling and rate limit
 
