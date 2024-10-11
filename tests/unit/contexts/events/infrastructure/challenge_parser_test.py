@@ -21,6 +21,23 @@ class TestChallengeEventParser:
                 </event>
             </base_event>
             """
+        
+        @pytest.fixture
+        def invalid_date_xml(self):
+            return """
+                <eventList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:noNamespaceSchemaLocation="eventList.xsd">
+                <script/>
+                <output>
+                <base_event base_event_id="291" sell_mode="online" title="Camela en concierto">
+                <event event_start_date="2021-06-31T21:00:00" event_end_date="2021-06-30T22:00:00" event_id="291" sell_from="2020-07-01T00:00:00" sell_to="2021-06-30T20:00:00" sold_out="false">
+                <zone zone_id="40" capacity="243" price="20.00" name="Platea" numbered="true"/>
+                <zone zone_id="38" capacity="100" price="15.00" name="Grada 2" numbered="false"/>
+                <zone zone_id="30" capacity="90" price="30.00" name="A28" numbered="true"/>
+                </event>
+                </base_event>
+                </output>
+                </eventList>
+                """
 
         @pytest.fixture
         def invalid_xml(self):
@@ -45,6 +62,10 @@ class TestChallengeEventParser:
             assert event.min_price == 15.00
             assert event.max_price == 30.00
             assert event.sell_mode is True
+
+        def test_parse_invalid_date(self, parser, invalid_date_xml):
+            event = parser.parse(invalid_date_xml)
+            assert event is None
 
         def test_parse_invalid_xml(self, parser, invalid_xml):
             event = parser.parse(invalid_xml)
